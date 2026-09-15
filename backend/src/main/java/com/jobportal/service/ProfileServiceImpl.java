@@ -34,7 +34,9 @@ public class ProfileServiceImpl implements ProfileService {
 	private String geminiApiKey;
 
 	private final RestTemplate restTemplate = new RestTemplate();
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper()
+			.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
+			.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	@Override
 	public Long createProfile(UserDTO userDTO) throws JobPortalException {
@@ -106,14 +108,17 @@ public class ProfileServiceImpl implements ProfileService {
 				"      \"title\": \"string\",\n" +
 				"      \"company\": \"string\",\n" +
 				"      \"location\": \"string\",\n" +
-				"      \"description\": \"string\",\n" +
-				"      \"working\": boolean\n" +
+				"      \"startDate\": \"YYYY-MM-DDTHH:mm:ss (e.g. 2020-01-01T00:00:00, use 01 for day/month if unknown, or null if totally missing)\",\n" +
+				"      \"endDate\": \"YYYY-MM-DDTHH:mm:ss (use null if currently working or missing)\",\n" +
+				"      \"working\": boolean (true if currently working here),\n" +
+				"      \"description\": \"string\"\n" +
 				"    }\n" +
 				"  ],\n" +
 				"  \"certifications\": [\n" +
 				"    {\n" +
 				"      \"name\": \"string\",\n" +
 				"      \"issuer\": \"string\",\n" +
+				"      \"issueDate\": \"YYYY-MM-DDTHH:mm:ss (e.g. 2020-01-01T00:00:00, or null if missing)\",\n" +
 				"      \"certificateId\": \"string\"\n" +
 				"    }\n" +
 				"  ]\n" +
