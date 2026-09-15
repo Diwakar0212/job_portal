@@ -1,6 +1,6 @@
 # 🚀 JobHook - Job Portal Web Application
 
-A full-stack Job Portal platform built with **React (TypeScript)**, **Spring Boot**, and **MongoDB**.
+A full-stack Job Portal platform built with **React (TypeScript)**, **Spring Boot**, and **MongoDB**, featuring an AI-powered Resume Parser!
 
 ---
 
@@ -8,6 +8,7 @@ A full-stack Job Portal platform built with **React (TypeScript)**, **Spring Boo
 
 - **Frontend:** React 18, TypeScript, Tailwind CSS, Mantine UI, Redux Toolkit, TipTap Editor, Tabler Icons.
 - **Backend:** Java 17+, Spring Boot 3.3.2, Spring Security, JJWT (Stateless Auth), Spring Data MongoDB, JavaMailSender (OTP via SMTP).
+- **AI Integration:** Google Gemini AI (gemini-3.6-flash) via direct REST API for Resume Parsing.
 - **Database:** MongoDB running on default port `27017`.
 
 ---
@@ -42,7 +43,18 @@ The application requires auto-incrementing counters in a `sequence` collection t
 docker exec mongodb mongosh jobportal --eval "db.sequence.insertMany([{ _id: 'users', seq: NumberLong(0) }, { _id: 'profiles', seq: NumberLong(0) }, { _id: 'jobs', seq: NumberLong(0) }, { _id: 'notification', seq: NumberLong(0) }])"
 ```
 
-### 3. Install Frontend Dependencies
+### 3. Setup the AI API Key
+
+To enable the **AI Resume Auto-fill** feature, you need a free Google Gemini API key:
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey) and click **Create API Key**.
+2. Create a new file in the root of the project named `.env`.
+3. Add your API key to the `.env` file like this:
+   ```env
+   GEMINI_API_KEY="AIza..."
+   ```
+*(Note: Your `.env` file is safely ignored by Git so it won't be pushed to GitHub).*
+
+### 4. Install Frontend Dependencies
 From the project root:
 
 ```powershell
@@ -87,6 +99,13 @@ To run the complete application, you will keep **two terminals** open:
 
 ---
 
+## 🤖 Features
+
+### AI Resume Parser
+The application allows users to upload a PDF resume. The backend extracts text using **Apache PDFBox** and sends it directly to the **Google Gemini REST API**, which parses it into a structured JSON profile. This data is then used to instantly auto-fill the user's Profile details in the UI.
+
+---
+
 ## ⚙️ Configuration Details
 
 ### Backend Configuration
@@ -94,6 +113,7 @@ Located in: [`backend/src/main/resources/application.properties`](backend/src/ma
 
 - **Port:** `8081`
 - **Database URI:** `mongodb://localhost:27017/jobportal`
+- **Gemini API:** Uses environment variable placeholder (`gemini.api.key=${GEMINI_API_KEY}`).
 - **Mail (SMTP):** Used for sending OTPs for password recovery. Configure your Gmail App Password if needed:
   ```properties
   spring.mail.username=your-email@gmail.com
