@@ -66,6 +66,21 @@ public class ProfileServiceImpl implements ProfileService {
 		return profileRepository.findAll().stream().map((x) -> x.toDTO()).toList();
 	}
 
+	private String getResolvedGeminiKey() {
+		if (geminiApiKey != null && !geminiApiKey.trim().isEmpty() && !geminiApiKey.contains("${")) {
+			return geminiApiKey;
+		}
+		try {
+			java.util.List<String> lines = java.nio.file.Files.readAllLines(java.nio.file.Paths.get("../.env"));
+			for (String line : lines) {
+				if (line.startsWith("GEMINI_API_KEY=")) {
+					return line.substring("GEMINI_API_KEY=".length()).replace("\"", "").replace("'", "").trim();
+				}
+			}
+		} catch (Exception e) {}
+		return "";
+	}
+
 	@Override
 	public ProfileDTO parseResume(MultipartFile file) throws Exception {
 		// 1. Extract text from PDF
@@ -107,9 +122,9 @@ public class ProfileServiceImpl implements ProfileService {
 				+
 				"Resume Text:\n" + text;
 
-		// 3. Call Gemini API directly
+		// 3. Calling Gemini API directly
 		String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key="
-				+ geminiApiKey;
+				+ getResolvedGeminiKey();
 
 		Map<String, Object> requestBody = Map.of(
 				"contents", List.of(
@@ -122,11 +137,10 @@ public class ProfileServiceImpl implements ProfileService {
 
 		String responseStr = restTemplate.postForObject(url, entity, String.class);
 
-		// 4. Parse Gemini response
+		// 4. Parsing Gemini response
 		JsonNode root = objectMapper.readTree(responseStr);
 		String aiText = root.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
 
-		// Clean markdown if Gemini wraps it
 		aiText = aiText.trim();
 		if (aiText.startsWith("```json")) {
 			aiText = aiText.substring(7);
