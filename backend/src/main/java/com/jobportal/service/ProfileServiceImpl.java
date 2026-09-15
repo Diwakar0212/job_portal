@@ -79,7 +79,8 @@ public class ProfileServiceImpl implements ProfileService {
 					return line.substring("GEMINI_API_KEY=".length()).replace("\"", "").replace("'", "").trim();
 				}
 			}
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		return "";
 	}
 
@@ -100,7 +101,7 @@ public class ProfileServiceImpl implements ProfileService {
 				"  \"jobTitle\": \"string (current or most recent job title)\",\n" +
 				"  \"company\": \"string (current or most recent company)\",\n" +
 				"  \"location\": \"string\",\n" +
-				"  \"about\": \"string (a professional summary, 2-3 sentences)\",\n" +
+				"  \"about\": \"string (a professional summary, 2-3 sentences, first person pov)\",\n" +
 				"  \"totalExp\": number (total years of experience as integer),\n" +
 				"  \"skills\": [\"skill1\", \"skill2\", ...],\n" +
 				"  \"experiences\": [\n" +
@@ -108,7 +109,8 @@ public class ProfileServiceImpl implements ProfileService {
 				"      \"title\": \"string\",\n" +
 				"      \"company\": \"string\",\n" +
 				"      \"location\": \"string\",\n" +
-				"      \"startDate\": \"YYYY-MM-DDTHH:mm:ss (e.g. 2020-01-01T00:00:00, use 01 for day/month if unknown, or null if totally missing)\",\n" +
+				"      \"startDate\": \"YYYY-MM-DDTHH:mm:ss (e.g. 2020-01-01T00:00:00, use 01 for day/month if unknown, or null if totally missing)\",\n"
+				+
 				"      \"endDate\": \"YYYY-MM-DDTHH:mm:ss (use null if currently working or missing)\",\n" +
 				"      \"working\": boolean (true if currently working here),\n" +
 				"      \"description\": \"string\"\n" +
